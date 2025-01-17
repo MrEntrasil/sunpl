@@ -1,0 +1,4 @@
+func int main(){
+    print("a");
+    return 210;
+}

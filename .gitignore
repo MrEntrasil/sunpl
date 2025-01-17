@@ -1,0 +1,7 @@
+# Directories
+/.vscode
+/.vs
+/.codelite
+
+# Files
+/main
