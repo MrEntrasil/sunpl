@@ -1,2 +1,5 @@
+SOURCE_MAIN = src/main.cpp
+OUTPUT = SunPL
+
 all:
-	clang -o main src/main.c
+	g++ -o $(OUTPUT) $(SOURCE_MAIN)

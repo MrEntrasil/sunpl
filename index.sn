@@ -1,4 +1,3 @@
-func int main(){
-    print("a");
-    return 210;
-}
+show, [Hello world!];
+slknumcompensa;
+ret 0;
