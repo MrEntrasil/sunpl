@@ -3,8 +3,8 @@
 #include <string>
 #include "C_typing.hpp"
 
-void check_type(Token token, TokenType type){
-    if (token.type != type){
+void assert_type(Tokens tokens, int n, TokenType type){
+    if (tokens.size() < n || tokens.at(n).type != type){
         std::cout << "Syntax error: type checking failed.\n";
         exit(1);
     }
@@ -17,14 +17,12 @@ void Run(Tokens tokens){
 
         if (token.type == TokenType::Keyword){
             if (token.value.compare("show") == 0){
-                Token msg = tokens.at(i + 1);
-                check_type(msg, TokenType::Colon);
+                assert_type(tokens, i + 1, TokenType::String);
+                assert_type(tokens, i + 2, TokenType::Semicolon);
 
-                Token msg2 = tokens.at(i + 2);
-                check_type(msg2, TokenType::String);
-
-                std::cout << msg2.value << "\n";
+                std::cout << tokens.at(i + 1).value << "\n";
             } else if (token.value.compare("ret") == 0){
+                assert_type(tokens, i + 1, TokenType::Int);
                 std::string exitCode = tokens.at(i + 1).value;
                 if (exitCode.compare("0") == 0)
                     std::cout << "Program exited with code: 0\n";

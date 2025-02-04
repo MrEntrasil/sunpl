@@ -58,13 +58,13 @@ Tokens Tokenize(std::string content){
             tokens.push_back({ .value = "", .type = TokenType::Semicolon });
             continue;
         }
-        else if (c == '[')
+        else if (c == '"')
         {
             std::string v;
             i++;
 
             while (true){
-                if (content.at(i) == ']')
+                if (content.at(i) == '"')
                 {
                     break;
                 }
@@ -95,6 +95,12 @@ Tokens Tokenize(std::string content){
                     i++;
                 }
             }
+        }
+        else if (c == '(') {
+            tokens.push_back({ .value = "", .type = TokenType::Openparam });
+        }
+        else if (c == ')') {
+            tokens.push_back({ .value = "", .type = TokenType::Closeparam });
         }
     }
 

@@ -8,8 +8,8 @@ enum class TokenType{
     Int,
     Keyword,
     Identifier,
-    Semicolon,
-    Colon
+    Semicolon, Colon,
+    Openparam, Closeparam
 };
 
 typedef struct {

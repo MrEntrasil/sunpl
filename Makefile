@@ -1,5 +1,8 @@
-SOURCE_MAIN = src/main.cpp
-OUTPUT = SunPL
+FILES = src/main.cpp
+OUTPUT = build/SunPL
 
 all:
-	g++ -o $(OUTPUT) $(SOURCE_MAIN)
+	g++ -o $(OUTPUT) $(FILES)
+
+clean:
+	rm -rf ./build/SunPL.exe
