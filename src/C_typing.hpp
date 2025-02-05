@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 enum class TokenType{
     String,
@@ -9,7 +10,8 @@ enum class TokenType{
     Keyword,
     Identifier,
     Semicolon, Colon,
-    Openparam, Closeparam
+    Openparam, Closeparam,
+    MathOperator
 };
 
 typedef struct {

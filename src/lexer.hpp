@@ -1,108 +1,85 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include <vector>
+#include <optional>
+#include <cstring>
 #include "C_typing.hpp"
 
-Tokens Tokenize(std::string content){
-    Tokens tokens {};
+class Lexer {
+    public:
+    inline explicit Lexer(std::string content) : src(std::move(content)) {};
+    inline Tokens tokenize() {
+        Tokens tokens {};
+        std::string buffer;
 
-    for (int i = 0;i < content.length();i++)
-    {
-        char c = content.at(i);
-
-        if (std::isdigit(c))
-        {
-            std::string v;
-            v.push_back(c);
-
-            i++;
-            while (std::isdigit(content.at(i)))
-            {
-                v.push_back(content.at(i));
-                i++;
-            }
-            i--;
-
-            tokens.push_back({ .value = v, .type = TokenType::Int });
-            v.clear();
-        }
-        else if (std::isalpha(c))
-        {
-            std::string v;
-            v.push_back(c);
-
-            i++;
-            while (std::isalpha(content.at(i)))
-            {
-                v.push_back(content.at(i));
-                i++;
-            }
-            i--;
-
-            if (v.compare("ret") == 0)
-            {
-                tokens.push_back({ .value = "ret", .type = TokenType::Keyword });
-            }
-            else if (v.compare("show") == 0) {
-                tokens.push_back({ .value = "show", .type = TokenType::Keyword });
-            }
-            else if (v.compare("slknumcompensa") == 0) {
-                tokens.push_back({ .value = "slknumcompensa", .type = TokenType::Keyword });
-            }
-            v.clear();
-            continue;
-        }
-        else if (c == ';')
-        {
-            tokens.push_back({ .value = "", .type = TokenType::Semicolon });
-            continue;
-        }
-        else if (c == '"')
-        {
-            std::string v;
-            i++;
-
-            while (true){
-                if (content.at(i) == '"')
-                {
-                    break;
+        while (this->peak().has_value()) {
+            if (std::isalpha(this->peak().value())) {
+                while (this->peak().has_value() && std::isalpha(this->peak().value())) {
+                    buffer.push_back(this->consume());
                 }
-                else
-                {
-                    v.push_back(content.at(i));
-                    i++;
-                }
-            }
 
-            tokens.push_back({ .value = v, .type = TokenType::String });
-            v.clear();
-            continue;
-        }
-        else if (c == ',')
-        {
-            tokens.push_back({ .value = "", .type = TokenType::Colon });
-        }
-        else if (c == '#')
-        {
-            while (true){
-                if (content.at(i) == '\n')
-                {
-                    break;
+                if (buffer.compare("return") == 0) {
+                    tokens.push_back({ "return", TokenType::Keyword });
                 }
-                else
-                {
-                    i++;
+                buffer.clear();
+            }
+            else if (std::isdigit(this->peak().value())) {
+                while (this->peak().has_value() && std::isdigit(this->peak().value())) {
+                    buffer.push_back(this->consume());
+                }
+
+                tokens.push_back({ buffer, TokenType::Int });
+                buffer.clear();
+            }
+            else if (this->peak().value() == ';') {
+                tokens.push_back({ "", TokenType::Semicolon });
+                this->consume();
+            }
+            else if (this->peak().value() == ',') {
+                tokens.push_back({ "", TokenType::Colon });
+                this->consume();
+            }
+            else if (this->peak().value() == '(') {
+                tokens.push_back({ "", TokenType::Openparam });
+                this->consume();
+            }
+            else if (this->peak().value() == ')') {
+                tokens.push_back({ "", TokenType::Closeparam });
+                this->consume();
+            }
+            else if (std::isblank(this->peak().value())) {
+                this->consume();
+                continue;
+            }
+            else {
+                if (peak().value() == '+' || peak().value() == '-' || peak().value() == '*' || peak().value() == '/') {
+                    buffer += this->consume();
+                    tokens.push_back({ buffer, TokenType::MathOperator });
+                    buffer.clear();
+                } else {
+                    while (this->peak().has_value() && std::isalnum(this->peak().value())) {
+                        buffer.push_back(this->consume());
+                    }
+
+                    std::cout << "[ERROR] Unkown character: " << buffer << "\n";
+                    buffer.clear();
                 }
             }
         }
-        else if (c == '(') {
-            tokens.push_back({ .value = "", .type = TokenType::Openparam });
-        }
-        else if (c == ')') {
-            tokens.push_back({ .value = "", .type = TokenType::Closeparam });
+
+        return tokens;
+    };
+    private:
+    std::string src;
+    size_t index = 0;
+    inline std::optional<char> peak(int peak_n = 1) const {
+        if (this->index + peak_n <= this->src.length()) {
+            return this->src.at(this->index);
+        } else {
+            return {};
         }
     }
-
-    return tokens;
-}
+    inline char consume() {
+        return this->src.at(this->index++);
+    }
+};

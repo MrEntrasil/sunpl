@@ -4,7 +4,6 @@
 #include <sstream>
 #include "lexer.hpp"
 #include "C_typing.hpp"
-#include "interpreter.hpp"
 
 std::string readfile(std::string name){
     std::ostringstream oss;
@@ -16,6 +15,7 @@ std::string readfile(std::string name){
     }
     oss << file.rdbuf();
 
+    file.close();
     return oss.str();
 }
 
@@ -30,8 +30,9 @@ void checkout(int argc){
 int main(int argc, char* argv[]){
     checkout(argc);
     std::string content = readfile(argv[1]);
-    Tokens tokens = Tokenize(content);
-    Run(tokens);
+    Lexer* lexer = new Lexer(content);
+    Tokens tokens = lexer->tokenize();
 
+    delete lexer;
     return 0;
 }
